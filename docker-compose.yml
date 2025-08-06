@@ -1,29 +1,71 @@
 version: '3.8'
 
 services:
+  flowise:
+    image: flowiseai/flowise:latest
+    container_name: flowise
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - TZ=America/Guayaquil
+    volumes:
+      - flowise_data:/root/.flowise
+    restart: unless-stopped
+
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n
+    ports:
+      - "5678:5678"
+    environment:
+      - GENERIC_TIMEZONE=${TZ}
+      - TZ=${TZ}
+    volumes:
+      - n8n_data:/home/node/.n8n
+    restart: unless-stopped
+      - TZ=${TZ}
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    expose:
+      - 6333
+      - 6334
+      - 6335
+    configs:
+      - source: qdrant_config
+        target: /qdrant/config/production.yaml
+    environment:
+      - TZ=${TZ}
+    volumes:
+      - qdrant_data:/qdrant/storage
+    restart: always
+
   postgres:
     image: postgres:latest
-    container_name: postgres_db
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: mydb
+    container_name: postgres
     ports:
       - "5432:5432"
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - TZ=${TZ}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
 
-  qdrant:
-    image: qdrant/qdrant:latest
-    container_name: qdrant_vector
-    ports:
-      - "6333:6333"
-      - "6334:6334"
-    volumes:
-      - qdrant_data:/qdrant/storage
-    restart: unless-stopped
-
 volumes:
-  postgres_data:
+  flowise_data:
+  n8n_data:
   qdrant_data:
+  postgres_data:
+
+configs:
+  qdrant_config:
+    content: |
+      log_level: INFO
