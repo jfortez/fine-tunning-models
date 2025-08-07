@@ -10,3 +10,4 @@ jeanmcm
 .venv
 _unsloth_sentencepiece_temp
 llama.cpp
+*.log
