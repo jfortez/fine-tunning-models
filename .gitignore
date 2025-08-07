@@ -5,3 +5,8 @@ hf
 .venv
 docs
 outputs
+unsloth_compiled_cache
+jeanmcm
+.venv
+_unsloth_sentencepiece_temp
+llama.cpp
