@@ -8,10 +8,10 @@ services:
       - "3000:3000"
     environment:
       - PORT=3000
-      - TZ=America/Guayaquil
+      - TZ={TZ}
     volumes:
       - flowise_data:/root/.flowise
-    restart: unless-stopped
+    restart: always
 
   n8n:
     image: n8nio/n8n:latest
@@ -23,8 +23,7 @@ services:
       - TZ=${TZ}
     volumes:
       - n8n_data:/home/node/.n8n
-    restart: unless-stopped
-      - TZ=${TZ}
+    restart: always
 
   qdrant:
     image: qdrant/qdrant:latest
@@ -57,7 +56,7 @@ services:
       - TZ=${TZ}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    restart: unless-stopped
+    restart: always
   
   open-webui:
       image: ghcr.io/open-webui/open-webui:main
@@ -68,7 +67,7 @@ services:
           - open_webui_data:/app/backend/data
       environment:
           - TZ=${TZ}
-      restart: unless-stopped
+      restart: always
 
 volumes:
   flowise_data:
