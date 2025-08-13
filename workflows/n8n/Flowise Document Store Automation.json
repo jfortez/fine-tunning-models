@@ -1,0 +1,308 @@
+{
+  "name": "Flowise Document Store Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "={{ $json.flowiseBaseURL }}/api/v1/document-store/store/{{ $json.storeId }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        304,
+        240
+      ],
+      "id": "4610d948-69bb-4122-bb62-8a188888345c",
+      "name": "Get Document Store Detail",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "q8RILR1fApESkVXe",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "55c48e63-89bd-4721-906b-9ac6767a9153",
+              "name": "loaders",
+              "value": "={{ $json.loaders }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        512,
+        240
+      ],
+      "id": "1f30881b-c400-4601-ab24-9ed2ac4a30eb",
+      "name": "Extract Document Loaders"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        720,
+        240
+      ],
+      "id": "ebb1d3d0-e100-4dda-9245-dadb2f244dc9",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Edit Fields1').item.json.flowiseBaseURL }}/api/v1/document-store/loader/process/{{ $json.loaders[0].id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "={{ $json.loaders[0].id }}"
+            },
+            {
+              "name": "storeId",
+              "value": "={{ $('Edit Fields1').item.json.storeId }}"
+            },
+            {
+              "name": "loaderId",
+              "value": "={{ $json.loaders[0].loaderId }}"
+            },
+            {
+              "name": "loaderName",
+              "value": "={{ $json.loaders[0].loaderName }}"
+            },
+            {
+              "name": "loaderConfig",
+              "value": "={{ $json.loaders[0].loaderConfig }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        928,
+        336
+      ],
+      "id": "9df30658-7167-4ee3-b4c1-f63e7668f28e",
+      "name": "Process Chunks",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "q8RILR1fApESkVXe",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -112,
+        240
+      ],
+      "id": "303d73da-2d52-40e1-ad87-91fcc256458e",
+      "name": "Schedule Trigger1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0a3543a0-815c-4b7b-a47e-846dd606aa88",
+              "name": "storeId",
+              "value": "b5674422-7fc7-444e-8ac5-0969f98255f9",
+              "type": "string"
+            },
+            {
+              "id": "2d78d3d8-f06b-4741-be14-407309c636e8",
+              "name": "flowiseBaseURL",
+              "value": "http://localhost:3000",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        96,
+        240
+      ],
+      "id": "f9c5492f-40af-44e9-86b8-c97cfa2eaa9a",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "amount": 2
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1136,
+        336
+      ],
+      "id": "b860ee49-0fc6-4eea-8c6e-ffac10f1e203",
+      "name": "Wait",
+      "webhookId": "86710693-c586-4639-b27d-609605b62a57"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Edit Fields1').item.json.flowiseBaseURL }}/api/v1/document-store/vectorstore/insert",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "storeId",
+              "value": "={{ $('Edit Fields1').item.json.storeId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        928,
+        144
+      ],
+      "id": "91d98dc5-14ff-4fc1-b312-fb5a1d6c2195",
+      "name": "Upsert Chunks",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "q8RILR1fApESkVXe",
+          "name": "Header Auth account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Get Document Store Detail": {
+      "main": [
+        [
+          {
+            "node": "Extract Document Loaders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Document Loaders": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Upsert Chunks",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Process Chunks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Chunks": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Get Document Store Detail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f4902950-bf6d-41e7-b39d-ebc015247213",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7cdd72c82fbe878eb2d1b0a291bc92bd5b0415eabe9a134be6c6268b30234b28"
+  },
+  "id": "FeR3H8BZqnVZeo0P",
+  "tags": [
+    {
+      "createdAt": "2025-07-23T14:10:54.975Z",
+      "updatedAt": "2025-07-23T14:10:54.975Z",
+      "id": "QPh85uu0vxB0oJ2t",
+      "name": "Flowise"
+    }
+  ]
+}

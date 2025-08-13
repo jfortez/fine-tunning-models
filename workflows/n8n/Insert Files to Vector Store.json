@@ -1,0 +1,585 @@
+{
+  "name": "Insert Files to Vector Store",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -224,
+        -96
+      ],
+      "id": "797aa33e-6102-412e-8568-fd24dc846753",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "content": "Read Files From PATH",
+        "height": 256,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        608,
+        -144
+      ],
+      "typeVersion": 1,
+      "id": "db014c49-35ef-4f62-9048-8a5f4e321f55",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "fileSelector": "={{ $('Global Variables').item.json.folderPath }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        672,
+        -80
+      ],
+      "id": "a9767c64-ba82-4ef7-a8ce-0c3b047ab0e2",
+      "name": "Read *.pdf Files",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e710b464-7961-4d43-8f53-114505680365",
+              "name": "flowiseUrl",
+              "value": "http://localhost:3000",
+              "type": "string"
+            },
+            {
+              "id": "37b3a346-48d9-401c-8592-d5c4c323d6fd",
+              "name": "folderPath",
+              "value": "C:\\\\Users\\\\ASUS\\\\Documents\\\\bsoft\\\\Doc_riesgos\\\\*.pdf",
+              "type": "string"
+            },
+            {
+              "id": "faafb6f5-f0d9-4778-b962-df803505b8de",
+              "name": "ollamaBaseUrl",
+              "value": "https://vwlppjjfa98c9x-11434.proxy.runpod.net",
+              "type": "string"
+            },
+            {
+              "id": "80592e7f-4cf8-4029-84c6-133b92cbcd2e",
+              "name": "ollamaEmbeddingModel",
+              "value": "nomic-embed-text",
+              "type": "string"
+            },
+            {
+              "id": "38d993b1-bb3f-45aa-8cd7-1833174a1731",
+              "name": "qdrantServerUrl",
+              "value": "http://localhost:6333/",
+              "type": "string"
+            },
+            {
+              "id": "e791a5f0-36e4-4b3f-a451-1ac56e4bb54b",
+              "name": "qdrantCollectionName",
+              "value": "bsoft_riesgos_collection_test",
+              "type": "string"
+            },
+            {
+              "id": "fe1f201f-84da-4a3b-bfdb-6cff7e091a16",
+              "name": "pgHost",
+              "value": "localhost",
+              "type": "string"
+            },
+            {
+              "id": "eefe61ef-1425-49ab-91ed-91b3c028b416",
+              "name": "pgDatabase",
+              "value": "taco",
+              "type": "string"
+            },
+            {
+              "id": "88f22eb1-2297-4749-b5d9-7d4c071e720e",
+              "name": "pgPort",
+              "value": "5432",
+              "type": "string"
+            },
+            {
+              "id": "87609a7f-55d2-439b-9698-4539b21e4919",
+              "name": "pgCredential",
+              "value": "df5628e5-df37-40a4-9379-56b4ad402be1",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -16,
+        -96
+      ],
+      "id": "ea480e3d-9e99-4407-b825-e3d123181c0e",
+      "name": "Global Variables"
+    },
+    {
+      "parameters": {
+        "batchSize": "=1",
+        "options": {
+          "reset": false
+        }
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1040,
+        -80
+      ],
+      "id": "599a6fda-5d49-48e9-b09c-e6c5ade25962",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Global Variables').item.json.flowiseUrl }}/api/v1//document-store/store",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "name",
+              "value": "Created Vector Store"
+            },
+            {
+              "name": "description",
+              "value": "=This Document Store was created using n8n workflow.\ncreated at {{ $now }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        144,
+        -96
+      ],
+      "id": "e1c6a809-a211-4922-813b-81d94b60baf6",
+      "name": "Crear Document Store",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "q8RILR1fApESkVXe",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "options": {
+          "keepSource": "both"
+        }
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        1872,
+        32
+      ],
+      "id": "21b8d6df-4fd8-4325-bda1-41af1c85e27b",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "93d58d27-976a-4d16-9fe7-b5ce2726d3b7",
+              "name": "loaderId",
+              "value": "pdfFile",
+              "type": "string"
+            },
+            {
+              "id": "7a9f2a2a-960c-478a-8c81-d408cdf9423e",
+              "name": "loaderName",
+              "value": "={{ $json.fileName }}",
+              "type": "string"
+            },
+            {
+              "id": "962915c6-be4c-4404-a3b0-18e69a08054e",
+              "name": "loaderConfig",
+              "value": "={\n  \"pdfFile\":\"data:application/pdf;base64,{{ $json.data }},filename:{{ $json.fileName }}\",\n  \"textSplitter\": \"\",\n  \"usage\": \"perPage\",\n  \"legacyBuild\": \"\",\n  \"metadata\": \"\",\n  \"omitMetadataKeys\": \"\"\n}",
+              "type": "object"
+            },
+            {
+              "id": "ced7cd9f-e45b-419a-aaef-704e88954382",
+              "name": "splitterId",
+              "value": "recursiveCharacterTextSplitter",
+              "type": "string"
+            },
+            {
+              "id": "379750e6-67d1-4a18-bc25-5a81b01ded22",
+              "name": "splitterConfig",
+              "value": "={\n  \"chunkSize\": 1000,\n  \"chunkOverlap\": 200,\n  \"separators\": \"\"\n}",
+              "type": "object"
+            },
+            {
+              "id": "8985a8aa-7bbf-4fe8-9677-14bcaa705f05",
+              "name": "splitterName",
+              "value": "Recursive Character Text Splitter",
+              "type": "string"
+            },
+            {
+              "id": "e243031c-a876-4937-9d27-bda20e682c87",
+              "name": "storeId",
+              "value": "={{ $('Crear Document Store').item.json.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2080,
+        32
+      ],
+      "id": "5aaeabb6-2554-4995-9d85-b46c4f870dbc",
+      "name": "Loader Save Body"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Global Variables').item.json.flowiseUrl }}/api/v1/document-store/loader/save",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "loaderId",
+              "value": "={{ $json.loaderId }}"
+            },
+            {
+              "name": "storeId",
+              "value": "={{ $json.storeId }}"
+            },
+            {
+              "name": "loaderConfig",
+              "value": "={{ $json.loaderConfig }}"
+            },
+            {
+              "name": "splitterId",
+              "value": "={{ $json.splitterId }}"
+            },
+            {
+              "name": "splitterConfig",
+              "value": "={{ $json.splitterConfig }}"
+            },
+            {
+              "name": "splitterName",
+              "value": "={{ $json.splitterName }}"
+            },
+            {
+              "name": "loaderName",
+              "value": "={{ $json.loaderName }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2336,
+        32
+      ],
+      "id": "37de1278-12cf-4174-826c-95bd874912e4",
+      "name": "Save Loader",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "q8RILR1fApESkVXe",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Global Variables').item.json.flowiseUrl }}/api/v1/document-store/vectorstore/save",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"storeId\": \"{{ $json.id }}\",\n    \"embeddingConfig\": {\n        \"baseUrl\": \"{{ $('Global Variables').item.json.ollamaBaseUrl }}\",\n        \"modelName\": \"{{ $('Global Variables').item.json.ollamaEmbeddingModel }}\",\n        \"numGpu\": \"\",\n        \"numThread\": \"\",\n        \"useMMap\": true\n    },\n    \"embeddingName\": \"ollamaEmbedding\",\n    \"vectorStoreConfig\": {\n        \"document\": \"\",\n        \"embeddings\": \"\",\n        \"recordManager\": \"\",\n        \"qdrantServerUrl\": \"{{ $('Global Variables').item.json.qdrantServerUrl }}\",\n        \"qdrantCollection\": \"{{ $('Global Variables').item.json.qdrantCollectionName }}\",\n        \"fileUpload\": \"\",\n        \"qdrantVectorDimension\": \"768\",\n        \"contentPayloadKey\": \"content\",\n        \"metadataPayloadKey\": \"metadata\",\n        \"batchSize\": \"\",\n        \"qdrantSimilarity\": \"Cosine\",\n        \"qdrantCollectionConfiguration\": \"\",\n        \"topK\": \"10\",\n        \"qdrantFilter\": \"\"\n    },\n    \"vectorStoreName\": \"qdrant\",\n    \"recordManagerConfig\": {\n        \"host\": \"{{ $('Global Variables').item.json.pgHost }}\",\n        \"database\": \"{{ $('Global Variables').item.json.pgDatabase }}\",\n        \"port\": \"{{ $('Global Variables').item.json.pgPort }}\",\n        \"ssl\": \"\",\n        \"additionalConfig\": \"\",\n        \"tableName\": \"\",\n        \"namespace\": \"\",\n        \"cleanup\": \"full\",\n        \"sourceIdKey\": \"source\",\n        \"credential\": \"{{ $('Global Variables').item.json.pgCredential }}\"\n    },\n    \"recordManagerName\": \"postgresRecordManager\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        336,
+        -96
+      ],
+      "id": "f7af0ebb-64ae-4efc-ac5f-ed7b65c2ef46",
+      "name": "Guardar Configuracion de Vector Storage",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "q8RILR1fApESkVXe",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Global Variables').item.json.flowiseUrl }}/api/v1/document-store/vectorstore/insert",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "storeId",
+              "value": "={{ $('Crear Document Store').item.json.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1552,
+        -176
+      ],
+      "id": "84f3a1ae-26b1-403f-a61e-a99897006b5a",
+      "name": "Upsert Vector Store",
+      "executeOnce": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "q8RILR1fApESkVXe",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Global Variables').item.json.flowiseUrl }}/api/v1/document-store/loader/process/{{ $json.id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "storeId",
+              "value": "={{ $('Crear Document Store').item.json.id }}"
+            },
+            {
+              "name": "loaderId",
+              "value": "={{ $json.loaderId }}"
+            },
+            {
+              "name": "loaderConfig",
+              "value": "={{ $json.loaderConfig }}"
+            },
+            {
+              "name": "loaderName",
+              "value": "={{ $('Save Loader').item.json.loaderName }}"
+            },
+            {
+              "name": "splitterId",
+              "value": "={{ $json.splitterId }}"
+            },
+            {
+              "name": "splitterConfig",
+              "value": "={{ $json.splitterConfig }}"
+            },
+            {
+              "name": "splitterName",
+              "value": "={{ $json.splitterName }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2672,
+        32
+      ],
+      "id": "33a0b9fe-d321-4a7f-b68b-6f9c5ca8ffd2",
+      "name": "Process Loader",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "q8RILR1fApESkVXe",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        1248,
+        -176
+      ],
+      "id": "e7db44a9-fea9-43e8-9d6c-547d831f054d",
+      "name": "Limit"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Global Variables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read *.pdf Files": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Global Variables": {
+      "main": [
+        [
+          {
+            "node": "Crear Document Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crear Document Store": {
+      "main": [
+        [
+          {
+            "node": "Guardar Configuracion de Vector Storage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Loader Save Body",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loader Save Body": {
+      "main": [
+        [
+          {
+            "node": "Save Loader",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Loader": {
+      "main": [
+        [
+          {
+            "node": "Process Loader",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar Configuracion de Vector Storage": {
+      "main": [
+        [
+          {
+            "node": "Read *.pdf Files",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Loader": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert Vector Store": {
+      "main": [
+        []
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Upsert Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ec745921-1082-4f53-b6e8-82c0122026c8",
+  "meta": {
+    "instanceId": "7cdd72c82fbe878eb2d1b0a291bc92bd5b0415eabe9a134be6c6268b30234b28"
+  },
+  "id": "HfzsF46vVFwGK4Gf",
+  "tags": [
+    {
+      "createdAt": "2025-07-23T14:10:54.975Z",
+      "updatedAt": "2025-07-23T14:10:54.975Z",
+      "id": "QPh85uu0vxB0oJ2t",
+      "name": "Flowise"
+    }
+  ]
+}
