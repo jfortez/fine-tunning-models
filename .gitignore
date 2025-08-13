@@ -11,3 +11,5 @@ jeanmcm
 _unsloth_sentencepiece_temp
 llama.cpp
 *.log
+outputs_2
+lora_model
