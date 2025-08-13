@@ -11,6 +11,7 @@ services:
       - TZ={TZ}
     volumes:
       - flowise_data:/root/.flowise
+      - ./shared:/shared
     restart: always
 
   n8n:
@@ -23,6 +24,7 @@ services:
       - TZ=${TZ}
     volumes:
       - n8n_data:/home/node/.n8n
+      - ./shared:/shared
     restart: always
 
   qdrant:
@@ -42,6 +44,7 @@ services:
       - TZ=${TZ}
     volumes:
       - qdrant_data:/qdrant/storage
+      - ./shared:/shared
     restart: always
 
   postgres:
@@ -56,18 +59,20 @@ services:
       - TZ=${TZ}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./shared:/shared
     restart: always
-  
+
   open-webui:
-      image: ghcr.io/open-webui/open-webui:main
-      container_name: open-webui
-      ports:
-          - "8080:8080"
-      volumes:
-          - open_webui_data:/app/backend/data
-      environment:
-          - TZ=${TZ}
-      restart: always
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    ports:
+      - "8080:8080"
+    environment:
+      - TZ=${TZ}
+    volumes:
+      - open_webui_data:/app/backend/data
+      - ./shared:/shared
+    restart: always
 
 volumes:
   flowise_data:
