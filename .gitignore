@@ -13,3 +13,4 @@ llama.cpp
 *.log
 outputs_2
 lora_model
+wandb
